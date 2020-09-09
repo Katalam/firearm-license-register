@@ -48,6 +48,27 @@ def page_edit():
     return render_template("edit.html",
                             message = session[2])
 
+@app.route("/logout", methods = ["POST"])
+def page_logout():
+    session = get_session(request)
+    if session is None:
+        return redirect("login")
+    result = remove_session(session[0])
+    response = redirect("login")
+    response.set_cookie(key = "session", value = result[0], max_age = result[1], httponly = True)
+    return response
+
+"""
+Removes session from db and returns empty session cookie values.
+"""
+def remove_session(session_id):
+    c.execute("DELETE FROM sessions WHERE session_id = %(sid)s;", {"sid": session_id})
+    db.commit()
+    return "", 0
+
+"""
+After each request from client the session cookie gets updated.
+"""
 @app.after_request
 def update_session_cookie(response):
     session = get_session(request)
@@ -57,6 +78,10 @@ def update_session_cookie(response):
 
     return response
 
+
+"""
+If session cookie is set return this session and update expire date inside db else return none.
+"""
 def get_session(request):
     session_cookie = request.cookies.get("session")
     if session_cookie is None:
@@ -65,12 +90,14 @@ def get_session(request):
               WHERE session_id = %(sid)s;", {"sid": session_cookie})
     db.commit()
 
-    # max_age = 3600 seconds = 1 hour
     c.execute("SELECT session_id, 3600 as max_age, user_id FROM sessions \
               WHERE session_id = %(sid)s;",
               {"sid": session_cookie})
     return c.fetchone()
 
+"""
+Handles login process for given username and password.
+"""
 def login(username, password):
     c.execute("SELECT id FROM users WHERE username = %(username)s;", {"username": username})
     user_id = c.fetchone()
@@ -80,6 +107,10 @@ def login(username, password):
         return create_authenticated_session(user_id[0])
     return None
 
+
+"""
+Compares given plain password with saved hash in db.
+"""
 def auth(user_id, password):
     c.execute("SELECT salt, hash FROM users WHERE id = %(user_id)s;", {"user_id": user_id})
     r = c.fetchone()
@@ -94,13 +125,20 @@ def auth(user_id, password):
     hash_user = h.hexdigest()
     return secrets.compare_digest(hash_db, hash_user)
 
+"""
+Generate and save new session in database and return session id.
+"""
 def create_authenticated_session(user_id):
     sid = secrets.token_hex(32)
     c.execute("INSERT INTO sessions VALUES (null, %(sid)s, DATE_ADD(NOW(), INTERVAL 1 HOUR), %(user_id)s);",
                 {"sid": sid, "user_id": user_id})
     db.commit()
-    return sid, 3600 # 1 hour
+    return sid, 3600
 
+
+"""
+Init database for first usage.
+"""
 def init_db():
     try:
         c.execute("CREATE TABLE IF NOT EXISTS users (id SERIAL UNIQUE, username VARCHAR(254) NOT NULL UNIQUE, \

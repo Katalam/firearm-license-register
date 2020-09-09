@@ -7,5 +7,8 @@
     <div>
       <p>{{ message }}</p>
     </div>
+    <form action="{{url_for('page_logout')}}" method="post">
+      <input type="submit" value="Log Out" class="nobutton">
+    </form>
   </body>
 </html>
