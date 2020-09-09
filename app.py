@@ -48,6 +48,15 @@ def page_edit():
     return render_template("edit.html",
                             message = session[2])
 
+@app.after_request
+def update_session_cookie(response):
+    session = get_session(request)
+
+    if not session is None:
+        response.set_cookie(key = "session", value = session[0], max_age = session[1], httponly = True)
+
+    return response
+
 def get_session(request):
     session_cookie = request.cookies.get("session")
     if session_cookie is None:
@@ -100,7 +109,7 @@ def init_db():
             user_id INTEGER REFERENCES users(id), PRIMARY KEY(session_id));")
         db.commit()
     except Exception as error:
-        print(error)
+        print(f"{bcolors.FAIL}{error}{bcolors.ENDC}")
     finally:
         print(f"{bcolors.OKGREEN}Database connected.{bcolors.ENDC}")
 
