@@ -1,14 +1,43 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Edit</title>
-  </head>
-  <body>
-    <div>
-      <p>{{ message }}</p>
-    </div>
+{% extends 'base.html' %}
+{% block content %}
+    <input type="text" id="searchTable" onkeyup="searchNames()" placeholder="Search for names..">
+    <table id="charTable">
+      {% for row in rows %}
+      <tr>
+          <td>{{ row[1] }} {{ row[2] }}</td>
+          <td>{{ row[3] }}</td>
+          <td>{{ row[4] }}</td>
+          <td>{{ row[5] }}</td>
+          <td>
+            <form action="{{url_for('page_edit_char', charId = row[0])}}" method="post">
+              <input type="submit" value="Edit" class="nobutton">
+            </form>
+          </td>
+      </tr>
+      {% endfor %}
+    </table>
     <form action="{{url_for('page_logout')}}" method="post">
       <input type="submit" value="Log Out" class="nobutton">
     </form>
-  </body>
-</html>
+
+    <script>
+      function searchNames() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchTable");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("charTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+      </script>
+{% endblock %}

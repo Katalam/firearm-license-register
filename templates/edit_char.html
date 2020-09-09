@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form action="{{url_for('page_logout')}}" method="post">
+      <input id="a" name="a" type="text">
+      <input id="b" name="b" type="text">
+      <input type="submit">
+    </form>
+    <form action="{{url_for('page_logout')}}" method="post">
+      <input type="submit" value="Log Out" class="nobutton">
+    </form>
+    <script type=text/javascript>
+      document.getElementById('a').value = '{{ a }}';
+      document.getElementById('b').value = '{{ b }}';
+  </script>
+{% endblock %}

@@ -45,8 +45,10 @@ def page_edit():
     session = get_session(request)
     if not session:
         return redirect("login")
+    c.execute("SELECT * FROM characters;")
+
     return render_template("edit.html",
-                            message = session[2])
+                            rows = c.fetchall())
 
 @app.route("/logout", methods = ["POST"])
 def page_logout():
@@ -57,6 +59,18 @@ def page_logout():
     response = redirect("login")
     response.set_cookie(key = "session", value = result[0], max_age = result[1], httponly = True)
     return response
+
+@app.route("/character/<charId>", methods = ["GET", "POST"])
+def page_edit_char(charId):
+    session = get_session(request)
+    if session is None:
+        return redirect("login")
+    c.execute("SELECT a, b FROM characters WHERE id = %(charid)s;", {"charid": charId})
+    data = c.fetchone()
+    if data is None:
+        return redirect("login")
+    return render_template("edit_char.html", a = data[0], b = data[1])
+
 
 """
 Removes session from db and returns empty session cookie values.
@@ -145,6 +159,8 @@ def init_db():
             salt TEXT NOT NULL, hash TEXT NOT NULL, PRIMARY KEY(username))")
         c.execute("CREATE TABLE IF NOT EXISTS sessions (id SERIAL, session_id VARCHAR(254) NOT NULL UNIQUE, expires_after TIMESTAMP NOT NULL, \
             user_id INTEGER REFERENCES users(id), PRIMARY KEY(session_id));")
+        c.execute("CREATE TABLE IF NOT EXISTS characters (id SERIAL, first_name VARCHAR(254) NOT NULL, last_name VARCHAR(254) NOT NULL, \
+            birthday VARCHAR(254) NOT NULL, a BOOLEAN, b BOOLEAN, PRIMARY KEY(id));")
         db.commit()
     except Exception as error:
         print(f"{bcolors.FAIL}{error}{bcolors.ENDC}")
