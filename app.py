@@ -94,6 +94,14 @@ def update_session_cookie(response):
 
 
 """
+Removes expired sessions before the request handling.
+"""
+@app.before_request
+def remove_expired_sessions():
+    c.execute("DELETE FROM sessions WHERE expires_after < NOW();")
+    db.commit()
+
+"""
 If session cookie is set return this session and update expire date inside db else return none.
 """
 def get_session(request):
