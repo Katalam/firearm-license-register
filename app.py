@@ -7,6 +7,7 @@ import hashlib
 load_dotenv()
 
 app = Flask(__name__)
+app.config["APPLICATION_ROOT"] = os.getenv("ROOT")
 
 db = mysql.connector.connect(
     host = os.getenv("HOST"),
