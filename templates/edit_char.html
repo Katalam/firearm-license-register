@@ -1,15 +1,37 @@
 {% extends 'base.html' %}
+{% block left %}
+<a href="{{url_for('page_edit')}}" class="item">
+  <i class="fas fa-newspaper"></i>&nbsp; Übersicht
+</a>
+{% endblock %}
 {% block content %}
-    <form action="{{url_for('page_logout')}}" method="post">
-      <input id="a" name="a" type="text">
-      <input id="b" name="b" type="text">
-      <input type="submit">
-    </form>
-    <form action="{{url_for('page_logout')}}" method="post">
-      <input type="submit" value="Log Out" class="nobutton">
-    </form>
+<div>
+  <form action="{{url_for('page_edit_char_save', charId = id)}}" method="post" class="ui form">
+  <div class="field">
+    <label>A</label>
+    <select name="a" id="a">
+      <option value="4">Ja</option>
+      <option value="3">Beantragt</option>
+      <option value="2">Sperre</option>
+      <option value="1">Entzogen</option>
+      <option value="0">Nein</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>B</label>
+    <select name="b" id="b">
+      <option value="4">Ja</option>
+      <option value="3">Beantragt</option>
+      <option value="2">Sperre</option>
+      <option value="1">Entzogen</option>
+      <option value="0">Nein</option>
+    </select>
+  </div>
+  <button class="ui primary button"type="submit">Speichern</button>
+  </form>
+</div>
     <script type=text/javascript>
-      document.getElementById('a').value = '{{ a }}';
-      document.getElementById('b').value = '{{ b }}';
+      $('#a').val('{{ a }}')
+      $('#b').val('{{ b }}')
   </script>
 {% endblock %}

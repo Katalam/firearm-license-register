@@ -1,43 +1,112 @@
 {% extends 'base.html' %}
 {% block content %}
-    <input type="text" id="searchTable" onkeyup="searchNames()" placeholder="Search for names..">
-    <table id="charTable">
-      {% for row in rows %}
-      <tr>
-          <td>{{ row[1] }} {{ row[2] }}</td>
-          <td>{{ row[3] }}</td>
-          <td>{{ row[4] }}</td>
-          <td>{{ row[5] }}</td>
-          <td>
-            <form action="{{url_for('page_edit_char', charId = row[0])}}" method="post">
-              <input type="submit" value="Edit" class="nobutton">
-            </form>
-          </td>
-      </tr>
-      {% endfor %}
-    </table>
-    <form action="{{url_for('page_logout')}}" method="post">
-      <input type="submit" value="Log Out" class="nobutton">
-    </form>
+<div id="example_wrapper" class="dataTables_wrapper dt-semanticUI no-footer">
+  <form class="ui form">
+    <div class="field">
+      <input type="text" id="searchTable" onkeyup="searchNames()" placeholder="Nach Namen suchen...">
+    </div>
+  </form>
+  <br>
+  <div class="ui stackable grid">
+    <div class="row dt-table">
+      <div class="sixteen wide column">
+        <table id="charTable" class="ui celled table dataTable no-footer" style="width:100%" role="grid">
+          <thead>
+            <tr role="row">
+              <th class="sorting_desc" tabindex="0"  rowspan="1" colspan="1"
+                style="width: 446px;">
+                Vollständiger Name
+              </th>
+              <th class="sorting" tabindex="0" rowspan="1" colspan="1"
+                style="width: 165px;">
+                Geburtsdatum
+              </th>
+              <th class="sorting" tabindex="0" rowspan="1" colspan="1"
+                style="width: 77px;">
+                A
+              </th>
+              <th class="sorting" tabindex="0" rowspan="1" colspan="1"
+                style="width: 104px;">
+                B
+              </th>
+              <th class="sorting" tabindex="0" rowspan="1" colspan="1"
+                style="width: 82px;">
+                Edit
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+            <tr role="row" class="odd">
+              <td>
+                {{ row[1] }} {{ row[2] }}
+              </td>
+              <td>
+                {{ row[3] }}
+              </td>
+              <td>
+                {% if row[4] == 0 %}
+                  Nein
+                {% elif row[4] == 1 %}
+                  Entzogen
+                {% elif row[4] == 2 %}
+                  Sperre
+                {% elif row[4] == 3 %}
+                  Beantragt
+                {% elif row[4] == 4 %}
+                  Ja
+                {% else %}
+                  Nein
+                {% endif %}
+              </td>
+              <td>
+                {% if row[5] == 0 %}
+                  Nein
+                {% elif row[5] == 1 %}
+                  Entzogen
+                {% elif row[5] == 2 %}
+                  Sperre
+                {% elif row[5] == 3 %}
+                  Beantragt
+                {% elif row[5] == 4 %}
+                  Ja
+                {% else %}
+                  Nein
+                {% endif %}
+              </td>
+              <td>
+                <form class="ui form" action="{{url_for('page_edit_char', charId = row[0])}}" method="post">
+                  <input type="submit" value="Edit" class="ui primary button">
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
 
-    <script>
-      function searchNames() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("searchTable");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("charTable");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td")[0];
-          if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
-            }
-          }
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function searchNames() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchTable");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("charTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
         }
       }
-      </script>
+    }
+  }
+</script>
 {% endblock %}

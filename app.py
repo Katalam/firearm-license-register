@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, redirect, render_template, abort
+from flask import Flask, request, redirect, render_template, abort, url_for
 import mysql.connector
 from dotenv import load_dotenv
 import secrets
@@ -17,6 +17,10 @@ db = mysql.connector.connect(
 
 c = db.cursor()
 
+@app.route("/")
+def page():
+    return render_template("base.html", login = True)
+
 # login
 @app.route("/login", methods = ["GET", "POST"])
 def page_login():
@@ -28,8 +32,8 @@ def page_login():
             abort(400)
         result = login(username, password)
         if result is None:
-            return render_template("edit.html",
-                            message = "Wrong")
+            return render_template("base.html",
+                            h = "Falsch", message = "Dein Passwort oder dein Benutzername ist falsch.")
         response = redirect("edit")
         response.set_cookie(key = "session", value = result[0],
                             max_age = result[1], httponly = True)
@@ -38,23 +42,23 @@ def page_login():
         session = get_session(request)
         if session:
             return redirect("edit")
-        return render_template("login.html")
+        return render_template("login.html", login = True)
 
 @app.route("/edit", methods = ["GET", "POST"])
 def page_edit():
     session = get_session(request)
     if not session:
-        return redirect("login")
+        return redirect(url_for("login"))
     c.execute("SELECT * FROM characters;")
 
     return render_template("edit.html",
                             rows = c.fetchall())
 
-@app.route("/logout", methods = ["POST"])
+@app.route("/logout", methods = ["GET", "POST"])
 def page_logout():
     session = get_session(request)
     if session is None:
-        return redirect("login")
+        return redirect(url_for("login"))
     result = remove_session(session[0])
     response = redirect("login")
     response.set_cookie(key = "session", value = result[0], max_age = result[1], httponly = True)
@@ -64,13 +68,25 @@ def page_logout():
 def page_edit_char(charId):
     session = get_session(request)
     if session is None:
-        return redirect("login")
-    c.execute("SELECT a, b FROM characters WHERE id = %(charid)s;", {"charid": charId})
+        return redirect(url_for("login"))
+    c.execute("SELECT first_name, last_name, a, b FROM characters WHERE id = %(charid)s;", {"charid": charId})
     data = c.fetchone()
     if data is None:
-        return redirect("login")
-    return render_template("edit_char.html", a = data[0], b = data[1])
+        return redirect(url_for("login"))
+    return render_template("edit_char.html", a = data[2], b = data[3], id = charId, h = data[0] + " " + data[1])
 
+@app.route("/character/<charId>/save", methods = ["GET", "POST"])
+def page_edit_char_save(charId):
+    session = get_session(request)
+    if session is None:
+        return redirect(url_for("login"))
+    try:
+        a = request.form["a"]
+        b = request.form["b"]
+    except KeyError:
+        abort(400)
+    c.execute("UPDATE `characters` SET `a`= %(a)s, `b`= %(b)s WHERE id = %(id)s;", {"a": a, "b": b, "id": charId})
+    return redirect(url_for("page_edit_char", charId = charId))
 
 """
 Removes session from db and returns empty session cookie values.
@@ -168,7 +184,7 @@ def init_db():
         c.execute("CREATE TABLE IF NOT EXISTS sessions (id SERIAL, session_id VARCHAR(254) NOT NULL UNIQUE, expires_after TIMESTAMP NOT NULL, \
             user_id INTEGER REFERENCES users(id), PRIMARY KEY(session_id));")
         c.execute("CREATE TABLE IF NOT EXISTS characters (id SERIAL, first_name VARCHAR(254) NOT NULL, last_name VARCHAR(254) NOT NULL, \
-            birthday VARCHAR(254) NOT NULL, a BOOLEAN, b BOOLEAN, PRIMARY KEY(id));")
+            birthday VARCHAR(254) NOT NULL, a INT(1), b INT(1), PRIMARY KEY(id));")
         db.commit()
     except Exception as error:
         print(f"{bcolors.FAIL}{error}{bcolors.ENDC}")

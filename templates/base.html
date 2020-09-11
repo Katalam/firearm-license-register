@@ -1,11 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true">
+
 <head>
-    <title>Weapon license register</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LSPD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
 </head>
+
 <body>
-    <section class="content">
-        {% block content %}
-        {% endblock %}
-    </section>
+    <div id="app" class="ui container segment">
+        <img style="width: 100%" src="{{ url_for('static', filename='img/header.png') }}">
+
+        <div class="ui inverted stackable main menu">
+            <div class="ui container">
+                {% block left %}
+                {% endblock %}
+                <div class="right menu">
+                    {% if login %}
+                    <a href="{{url_for('page_login')}}" class="item"><i class="fas fa-sign-in-alt"></i>
+                        &nbsp; Login
+                    </a>
+                    {% else %}
+                    <a href="{{url_for('page_logout')}}" class="item"><i class="fas fa-sign-in-alt"></i>
+                        &nbsp; Logout
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id="content-segment" class="ui container segment">
+            {% if h %}
+            <h1>{{ h }}</h1>
+            {% endif %}
+            {% if message %}
+            <p>{{ message }}</p>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
 </body>
+</html>
