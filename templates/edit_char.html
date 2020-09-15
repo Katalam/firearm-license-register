@@ -7,31 +7,37 @@
 {% block content %}
 <div>
   <form action="{{url_for('page_edit_char_save', charId = id)}}" method="post" class="ui form">
-  <div class="field">
-    <label>A</label>
-    <select name="a" id="a">
-      <option value="4">Ja</option>
-      <option value="3">Beantragt</option>
-      <option value="2">Sperre</option>
-      <option value="1">Entzogen</option>
-      <option value="0">Nein</option>
-    </select>
-  </div>
-  <div class="field">
-    <label>B</label>
-    <select name="b" id="b">
-      <option value="4">Ja</option>
-      <option value="3">Beantragt</option>
-      <option value="2">Sperre</option>
-      <option value="1">Entzogen</option>
-      <option value="0">Nein</option>
-    </select>
-  </div>
-  <button class="ui primary button"type="submit">Speichern</button>
+    <div class="field">
+      <label>A</label>
+      <select name="a" id="a">
+        <option value="4">Aktiv</option>
+        <option value="3">Beantragt</option>
+        <option value="2">Sperre</option>
+        <option value="1">Entzogen</option>
+        <option value="0">Nicht erworben</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>B</label>
+      <select name="b" id="b">
+        <option value="4">Aktiv</option>
+        <option value="2">Sperre</option>
+        <option value="1">Entzogen</option>
+        <option value="0">Nicht erworben</option>
+      </select>
+    </div>
+    <div class="field">
+      <div style="width: 49%; float: right;">
+        <input class="ui" type="text">
+      </div>
+    </div>
+    <button class="ui primary button"type="submit">Speichern</button>
   </form>
 </div>
     <script type=text/javascript>
       $('#a').val('{{ a }}')
       $('#b').val('{{ b }}')
+      if ('{{ disable_a }}' == 0) $('#a').prop('disabled', 'disabled')
+      if ('{{ disable_b }}' == 0) $('#b').prop('disabled', 'disabled')
   </script>
 {% endblock %}

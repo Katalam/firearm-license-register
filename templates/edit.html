@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <div id="example_wrapper" class="dataTables_wrapper dt-semanticUI no-footer">
+  <!--
+  <form class="ui form" action="{{url_for('page_new_char')}}" method="post">
+    <input type="submit" value="Neuer Eintrag" class="ui primary button right floated">
+  </form>
+  -->
   <form class="ui form">
     <div class="field">
+      <br>
       <input type="text" id="searchTable" onkeyup="searchNames()" placeholder="Nach Namen suchen...">
     </div>
   </form>
@@ -31,7 +37,7 @@
               </th>
               <th class="sorting" tabindex="0" rowspan="1" colspan="1"
                 style="width: 82px;">
-                Edit
+                Editieren
               </th>
             </tr>
           </thead>
@@ -76,7 +82,7 @@
               </td>
               <td>
                 <form class="ui form" action="{{url_for('page_edit_char', charId = row[0])}}" method="post">
-                  <input type="submit" value="Edit" class="ui primary button">
+                  <input type="submit" value="Editieren" class="ui primary button">
                 </form>
               </td>
             </tr>
