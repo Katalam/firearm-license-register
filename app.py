@@ -145,7 +145,7 @@ def allowed_to_change(value, userId):
         0: data[0] or data[1], # nicht erworben
         1: data[1], # Entzogen
         2: data[0], # Sperre
-        3: data[1], # Beantragt, not available for class b
+        3: data[0] or data[1], # Beantragt, not available for class b
         4: data[0] # aktiv
     }
     return switcher.get(value, 0)
