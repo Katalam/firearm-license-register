@@ -1,4 +1,3 @@
-from app import app
 import os
 from flask import Flask, request, redirect, render_template, abort, url_for
 import mysql.connector
@@ -7,6 +6,8 @@ import secrets
 import hashlib
 import requests
 load_dotenv()
+
+app = Flask(__name__)
 
 db = mysql.connector.connect(
     host = os.getenv("HOST"),
