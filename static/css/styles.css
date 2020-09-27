@@ -1,5 +1,5 @@
 body {
-    background-color: #5a4e4c;
+    background-color: #90292C;
     margin-top: 1em;
 }
 
@@ -33,15 +33,15 @@ h1,
 h2,
 h3,
 h4 {
-    color: #62a562;
+    color: #90292C;
 }
 
 .ui.segment {
-    background: #f4f0e7;
+    background: white;
 }
 
 .main.ui.menu {
-    background-color: #5a4e4c !important;
+    background-color: #90292C !important;
     margin-top: -0.3em;
     border-radius: 0 !important;
 }
@@ -51,11 +51,11 @@ input {
 }
 
 input:focus {
-    border-color: #62a562 !important;
+    border-color: #90292C !important;
 }
 
 .ui.primary {
-    background-color: #62a562 !important;
+    background-color: #90292C !important;
 }
 
 
@@ -76,11 +76,11 @@ input:focus {
 }
 
 a {
-    color: #62a562;
+    color: #90292C;
 }
 
 a:hover {
-    color: #3d723d;
+    color: #90292C;
 }
 
 blockquote {
@@ -89,7 +89,7 @@ blockquote {
     margin: 1.5em 10px;
     padding: 0.5em 10px;
     quotes: "\201C""\201D""\2018""\2019";
-  }
+}
 blockquote:before {
     color: #ccc;
     content: open-quote;
