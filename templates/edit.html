@@ -52,7 +52,7 @@
               </td>
               <td>
                 {% if row[4] == 0 %}
-                  Nein
+                  nicht erworben
                 {% elif row[4] == 1 %}
                   Entzogen
                 {% elif row[4] == 2 %}
@@ -60,14 +60,14 @@
                 {% elif row[4] == 3 %}
                   Beantragt
                 {% elif row[4] == 4 %}
-                  Ja
+                  Aktiv
                 {% else %}
-                  Nein
+                  nicht erworben
                 {% endif %}
               </td>
               <td>
                 {% if row[5] == 0 %}
-                  Nein
+                  nicht erworben
                 {% elif row[5] == 1 %}
                   Entzogen
                 {% elif row[5] == 2 %}
@@ -75,12 +75,12 @@
                 {% elif row[5] == 3 %}
                   Beantragt
                 {% elif row[5] == 4 %}
-                  Ja
+                  Aktiv
                 {% else %}
-                  Nein
+                  nicht erworben
                 {% endif %}
               </td>
-              <td>
+              <td style="text-align: center;">
                 <form class="ui form" action="{{url_for('page_edit_char', charId = row[0])}}" method="post">
                   <input type="submit" value="Editieren" class="ui primary button">
                 </form>

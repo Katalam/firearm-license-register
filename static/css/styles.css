@@ -105,3 +105,16 @@ blockquote p {
 p {
     margin: 0 0;
 }
+
+P:last-child {
+    margin-bottom: 1em;
+}
+
+.last-edited {
+    float: left;
+}
+
+select,
+textarea {
+    background: #f4f0e7 !important;
+}

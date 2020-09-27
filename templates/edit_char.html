@@ -8,7 +8,15 @@
 <div>
   <form action="{{url_for('page_edit_char_save', charId = id)}}" method="post" class="ui form">
     <div class="field">
-      <label>A</label>
+      <label>Geburtsdatum</label>
+      <input class="ui" type="date" id="birthday" name="birthday" value="{{ Birthday }}">
+    </div>
+    <div class="field">
+      <label>Personalausweisnummer</label>
+      <input class="ui" type="text" id="id" name="id" value="{{ Idcardid }}">
+    </div>
+    <div class="field">
+      <label>Waffenschein A</label>
       <select name="a" id="a">
         <option value="4">Aktiv</option>
         <option value="3">Beantragt</option>
@@ -18,7 +26,7 @@
       </select>
     </div>
     <div class="field">
-      <label>B</label>
+      <label>Waffenschein B</label>
       <select name="b" id="b">
         <option value="4">Aktiv</option>
         <option value="2">Sperre</option>
@@ -27,11 +35,29 @@
       </select>
     </div>
     <div class="field">
-      <div style="width: 49%; float: right;">
-        <input class="ui" type="text">
-      </div>
+      <label>Medizinisches Gutachten</label>
+      <select name="m" id="m">
+        <option value="0">Nicht durchgeführt</option>
+        <option value="1">Bestanden</option>
+        <option value="2">Nicht bestanden</option>
+      </select>
+      {% if MedicName %}
+      {% if MedicDate %}
+      <p class="ui last-edited">Zuletzt geändert von {{ MedicName }} am {{ MedicDate }}</p>
+      {% endif %}
+      {% endif %}
     </div>
-    <button class="ui primary button"type="submit">Speichern</button>
+    <div class="field">
+      <textarea id="comment" class="ui text" name="comment" cols="30" rows="10">{{ Comment }}</textarea>
+      {% if Name %}
+      {% if Date %}
+      <p class="ui last-edited">Zuletzt geändert von {{ Name }} am {{ Date }}</p>
+      {% endif %}
+      {% endif %}
+    </div>
+    <div class="field">
+      <button class="ui primary button" type="submit">Speichern</button>
+    </div>
   </form>
 </div>
     <script type=text/javascript>
@@ -39,5 +65,5 @@
       $('#b').val('{{ b }}')
       if ('{{ disable_a }}' == 0) $('#a').prop('disabled', 'disabled')
       if ('{{ disable_b }}' == 0) $('#b').prop('disabled', 'disabled')
-  </script>
+    </script>
 {% endblock %}

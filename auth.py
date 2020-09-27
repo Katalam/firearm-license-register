@@ -5,15 +5,16 @@ from dotenv import load_dotenv
 import secrets
 import hashlib
 import requests
+from datetime import date
 load_dotenv()
 
 app = Flask(__name__)
 
 db = mysql.connector.connect(
-    host = os.getenv("HOST"),
-    user = os.getenv("USER"),
-    password = os.getenv("PASSWORD"),
-    database = os.getenv("DATABASE")
+    host = os.getenv("DB_HOST"),
+    user = os.getenv("DB_USER"),
+    password = os.getenv("DB_PASSWORD"),
+    database = os.getenv("DB_DATABASE")
 )
 
 c = db.cursor()
@@ -70,15 +71,31 @@ def page_edit_char(charId):
     session = get_session(request)
     if session is None:
         return redirect(url_for("page_login"))
-    c.execute("SELECT first_name, last_name, a, b FROM characters WHERE id = %(charid)s;", {"charid": charId})
+    c.execute("SELECT first_name, last_name, a, b, comment, last_edited, last_edited_from, birthday, id_card FROM characters WHERE id = %(charid)s;", { "charid": charId })
     data = c.fetchone()
     if data is None:
         return redirect(url_for("page_login"))
+    last_edited_name = None
+    last_edited_date = data[5]
+    if data[5] is not None:
+        try:
+            userId = data[6]
+            c.execute("SELECT name FROM users WHERE id = %(userid)s;", { "userid": userId })
+            last_edited_name = c.fetchone()[0]
+        except:
+            pass
     return render_template("edit_char.html",
                         a = data[2], b = data[3],
                         id = charId, h = data[0] + " " + data[1],
                         disable_a = allowed_to_change(data[2], session[2]),
-                        disable_b = allowed_to_change(data[3], session[2]))
+                        disable_b = allowed_to_change(data[3], session[2]),
+                        Name = last_edited_name,
+                        Date = last_edited_date,
+                        Comment = data[4],
+                        MedicName = "MEDIC!",
+                        MedicDate = "01.01.1190",
+                        Birthday = data[7],
+                        Idcardid = data[8])
 
 @app.route("/character/<charId>/save", methods = ["GET", "POST"])
 def page_edit_char_save(charId):
@@ -86,22 +103,30 @@ def page_edit_char_save(charId):
     if session is None:
         return redirect(url_for("page_login"))
     a = request.form.get("a")
+    a = int(a)
     b = request.form.get("b")
+    b = int(b)
+    comment = request.form.get("comment")
+    birthday = request.form.get("birthday")
 
-    c.execute("SELECT * FROM characters WHERE id = %(id)s;", {"id": charId})
+    c.execute("SELECT * FROM characters WHERE id = %(id)s;", { "id": charId })
     data = c.fetchone()
     name = data[1] + " " + data[2]
-    old_a = data[4]
-    old_b = data[5]
+    old_a = data[5]
+    old_b = data[6]
     if not a == old_a:
         message_discord(session[2], "A", name, get_name_type(old_a), get_name_type(a))
     if not b == old_b:
         message_discord(session[2], "B", name, get_name_type(old_b), get_name_type(b))
 
     if not a is None:
-        c.execute("UPDATE `characters` SET `a`= %(a)s WHERE id = %(id)s;", {"a": a, "id": charId})
+        c.execute("UPDATE `characters` SET `a`= %(a)s WHERE id = %(id)s;", { "a": a, "id": charId })
     if not b is None:
-        c.execute("UPDATE `characters` SET `b`= %(b)s WHERE id = %(id)s;", {"b": b, "id": charId})
+        c.execute("UPDATE `characters` SET `b`= %(b)s WHERE id = %(id)s;", { "b": b, "id": charId })
+    if not comment is None and comment is not data[7]:
+        c.execute("UPDATE `characters` SET `comment`= %(comment)s, `last_edited` = %(date)s, `last_edited_from` = %(userid)s WHERE id = %(id)s;", { "comment": comment, "date": date.today().strftime("%d.%m.%Y"), "userid": session[2], "id": charId })
+    if not birthday is None and birthday is not data[3]:
+        c.execute("UPDATE `characters` SET `birthday`= %(birthday)s WHERE id = %(id)s;", { "birthday": birthday, "id": charId })
     return redirect(url_for("page_edit_char", charId = charId))
 
 @app.route("/character/new", methods = ["GET", "POST"])
@@ -110,7 +135,7 @@ def page_new_char():
     return render_template("base.html")
 
 def message_discord(user, type, name, old_value, new_value):
-    requests.post("https://discordapp.com/api/webhooks/754321362343952475/IAzRcNh-UZdzp65qMhzgbxmdqPBSLXDVeEDTtddfp9m46tBrmUgiiuBHPB8Ndtxv54DI", json={
+    requests.post("https://discordapp.com/api/webhooks/759539167632818186/KZ4SEmLgs-nt8jaCPSy8uj-V2-ZpQSpDHpPw9L9UJ5XM8JfWE7-Fy26CGBjbL9um9MUC", json={
         "embeds": [
             {
             "title": "Änderung",
@@ -137,7 +162,7 @@ Return allowed to changed a or b value based on userId
 if returned value is 0 you are not allowed to change it
 """
 def allowed_to_change(value, userId):
-    c.execute("SELECT police, store FROM users WHERE id = %(userId)s;", {"userId": userId})
+    c.execute("SELECT police, store FROM users WHERE id = %(userId)s;", { "userId": userId })
     data = c.fetchone()
     if data is None:
         return False
@@ -155,7 +180,7 @@ def allowed_to_change(value, userId):
 Removes session from db and returns empty session cookie values.
 """
 def remove_session(session_id):
-    c.execute("DELETE FROM sessions WHERE session_id = %(sid)s;", {"sid": session_id})
+    c.execute("DELETE FROM sessions WHERE session_id = %(sid)s;", { "sid": session_id })
     db.commit()
     return "", 0
 
@@ -188,7 +213,7 @@ def get_session(request):
     if session_cookie is None:
         return None
     c.execute("UPDATE sessions SET expires_after = DATE_ADD(NOW(), INTERVAL 1 HOUR) \
-              WHERE session_id = %(sid)s;", {"sid": session_cookie})
+              WHERE session_id = %(sid)s;", { "sid": session_cookie })
     db.commit()
 
     c.execute("SELECT session_id, 3600 as max_age, user_id FROM sessions \
@@ -200,7 +225,7 @@ def get_session(request):
 Handles login process for given username and password.
 """
 def login(username, password):
-    c.execute("SELECT id FROM users WHERE username = %(username)s;", {"username": username})
+    c.execute("SELECT id FROM users WHERE username = %(username)s;", { "username": username })
     user_id = c.fetchone()
     if user_id is None:
         return None
@@ -213,7 +238,7 @@ def login(username, password):
 Compares given plain password with saved hash in db.
 """
 def auth(user_id, password):
-    c.execute("SELECT salt, hash FROM users WHERE id = %(user_id)s;", {"user_id": user_id})
+    c.execute("SELECT salt, hash FROM users WHERE id = %(user_id)s;", { "user_id": user_id })
     r = c.fetchone()
     if r is None:
         return False
@@ -242,12 +267,13 @@ Init database for first usage.
 """
 def init_db():
     try:
-        c.execute("CREATE TABLE IF NOT EXISTS users (id SERIAL UNIQUE, username VARCHAR(254) NOT NULL UNIQUE, \
+        c.execute("CREATE TABLE IF NOT EXISTS users (id SERIAL UNIQUE, username VARCHAR(254) NOT NULL UNIQUE, name VARCHAR(254) NOT NULL UNIQUE, \
             salt TEXT NOT NULL, hash TEXT NOT NULL, police BOOLEAN, store BOOLEAN, PRIMARY KEY(username))")
         c.execute("CREATE TABLE IF NOT EXISTS sessions (id SERIAL, session_id VARCHAR(254) NOT NULL UNIQUE, expires_after TIMESTAMP NOT NULL, \
             user_id INTEGER REFERENCES users(id), PRIMARY KEY(session_id));")
         c.execute("CREATE TABLE IF NOT EXISTS characters (id SERIAL, first_name VARCHAR(254) NOT NULL, last_name VARCHAR(254) NOT NULL, \
-            birthday VARCHAR(254) NOT NULL, a INT(1), b INT(1), PRIMARY KEY(id));")
+            birthday VARCHAR(254) NOT NULL, id_card VARCHAR(254) NOT NULL, a INT(1), b INT(1), comment VARCHAR(254) NOT NULL, last_edited VARCHAR(254) NOT NULL, \
+            last_edited_from INT(11) NOT NULL, PRIMARY KEY(id));")
         db.commit()
     except Exception as error:
         print(f"{bcolors.FAIL}{error}{bcolors.ENDC}")
