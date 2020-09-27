@@ -51,21 +51,6 @@
                 {{ row[3] }}
               </td>
               <td>
-                {% if row[4] == 0 %}
-                  nicht erworben
-                {% elif row[4] == 1 %}
-                  Entzogen
-                {% elif row[4] == 2 %}
-                  Sperre
-                {% elif row[4] == 3 %}
-                  Beantragt
-                {% elif row[4] == 4 %}
-                  Aktiv
-                {% else %}
-                  nicht erworben
-                {% endif %}
-              </td>
-              <td>
                 {% if row[5] == 0 %}
                   nicht erworben
                 {% elif row[5] == 1 %}
@@ -75,6 +60,21 @@
                 {% elif row[5] == 3 %}
                   Beantragt
                 {% elif row[5] == 4 %}
+                  Aktiv
+                {% else %}
+                  nicht erworben
+                {% endif %}
+              </td>
+              <td>
+                {% if row[6] == 0 %}
+                  nicht erworben
+                {% elif row[6] == 1 %}
+                  Entzogen
+                {% elif row[6] == 2 %}
+                  Sperre
+                {% elif row[6] == 3 %}
+                  Beantragt
+                {% elif row[6] == 4 %}
                   Aktiv
                 {% else %}
                   nicht erworben
