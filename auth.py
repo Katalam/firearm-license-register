@@ -149,7 +149,7 @@ def allowed_to_change(value, userId):
         4: data[0] # aktiv
     }
     return switcher.get(value, 0)
-        
+
 
 """
 Removes session from db and returns empty session cookie values.
@@ -278,3 +278,6 @@ def create_user(username, password):
     print(f"{bcolors.OKBLUE}{user_hash}{bcolors.ENDC}")
 
 # create_user("katalam", "abc")
+
+if __name__ == "__main__":
+    app.run()
