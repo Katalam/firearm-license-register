@@ -108,6 +108,7 @@ def page_edit_char_save(charId):
     b = int(b)
     comment = request.form.get("comment")
     birthday = request.form.get("birthday")
+    idcard = request.form.get("id")
 
     c.execute("SELECT * FROM characters WHERE id = %(id)s;", { "id": charId })
     data = c.fetchone()
@@ -127,6 +128,8 @@ def page_edit_char_save(charId):
         c.execute("UPDATE `characters` SET `comment`= %(comment)s, `last_edited` = %(date)s, `last_edited_from` = %(userid)s WHERE id = %(id)s;", { "comment": comment, "date": date.today().strftime("%d.%m.%Y"), "userid": session[2], "id": charId })
     if not birthday is None and birthday is not data[3]:
         c.execute("UPDATE `characters` SET `birthday`= %(birthday)s WHERE id = %(id)s;", { "birthday": birthday, "id": charId })
+    if not idcard is None and idcard is not data[4]:
+        c.execute("UPDATE `characters` SET `id_card`= %(idcard)s WHERE id = %(id)s;", { "idcard": idcard, "id": charId })
     return redirect(url_for("page_edit_char", charId = charId))
 
 @app.route("/character/new", methods = ["GET", "POST"])
