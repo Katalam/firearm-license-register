@@ -9,7 +9,11 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="http://citylossantos.com" />
     <meta property="og:image" content="https://file.citylossantos.com/star.png" />
+    {% if h %}
+    <meta property="og:description" content="{{ h }}" />
+    {% else %}
     <meta property="og:description" content="Waffenscheinregister" />
+    {% endif %}
     <meta name="theme-color" content="#90292C">
     <title>AMMU★NATION</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
