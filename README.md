@@ -1,6 +1,6 @@
-# Weapon licence register
+# Firearm license register
 
-A wapon licence register for a GTA role-play project. Two licencces with a medical assessment and basic permission system.
+A firearm licence register for a GTA role-play project. Two licences with a medical assessment and basic permission system.
 
 ### Prerequisites
 
