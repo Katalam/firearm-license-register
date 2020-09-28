@@ -17,8 +17,8 @@ $ sudo apt install -y python3-venv
 Clone this repository.
 ```
 $ cd ~
-$ git clone https://github.com/Katalam/auth.git
-$ cd auth
+$ git clone https://github.com/Katalam/firearm-license-register.git
+$ cd firearm-license-register
 ```
 Now we need to setup the virtual environment.
 ```
@@ -54,10 +54,10 @@ There are three levels of password validation policy:
 
 LOW    Length >= 8
 MEDIUM Length >= 8, numeric, mixed case, and special characters
-STRONG Length >= 8, numeric, mixed case, special characters and dictionary                  file
+STRONG Length >= 8, numeric, mixed case, special characters and dictionary file
 
 Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG:
- 2
+2
 ```
 Set a secure rememberable password.
 ```
@@ -113,7 +113,7 @@ Run
 ```
 if output is like
 ```
- * Serving Flask app "auth" (lazy loading)
+ * Serving Flask app "firearm-license-register" (lazy loading)
  * Environment: production
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
