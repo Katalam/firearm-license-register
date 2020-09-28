@@ -2,6 +2,8 @@
 
 A firearm licence register for a GTA role-play project. Two licences with a medical assessment and basic permission system.
 
+![](https://file.citylossantos.com/showcase.png)
+
 ### Prerequisites
 
 You need to have python3 and virtualenv installed.
