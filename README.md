@@ -37,8 +37,8 @@ $ source venv/bin/activate
 ```
 We need to have a mysql database and in order get one.
 ```
-$ sudo apt install mysql-server
-$ sudo mysql_secure_installation
+(venv) $ sudo apt install mysql-server
+(venv) $ sudo mysql_secure_installation
 ```
 ```
 Securing the MySQL server deployment.
@@ -103,8 +103,8 @@ If the the output is like
 everything if fine and you can continue.
 Back to your project folder.
 ```
-$ cp .env.example .env
-$ vim .env
+(venv) $ cp .env.example .env
+(venv) $ vim .env
 ```
 And there you change your mysql user and password.
 
@@ -115,7 +115,7 @@ Run
 ```
 if output is like
 ```
- * Serving Flask app "firearm-license-register" (lazy loading)
+ * Serving Flask app "auth" (lazy loading)
  * Environment: production
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
