@@ -138,17 +138,18 @@ def page_new_char():
     return render_template("base.html")
 
 def message_discord(user, type, name, old_value, new_value):
-    requests.post(os.getenv("DISCORD_WEBHOOK"), json={
-        "embeds": [
-            {
-            "title": "Änderung",
-            "description": str(user) + " hat Waffenschein " + type + " von " + name + " von " + old_value + " in " + new_value + " geändert.",
-            "color": 16711680
-            }
-        ],
-        "username": "Waffenscheinregister",
-        "avatar_url": "https://i.imgur.com/f7yTuA5.jpeg"
-        })
+    if os.getenv("DISCORD_WEBHOOK") is not None:
+        requests.post(os.getenv("DISCORD_WEBHOOK"), json={
+            "embeds": [
+                {
+                    "title": "Änderung",
+                    "description": str(user) + " hat Waffenschein " + type + " von " + name + " von " + old_value + " in " + new_value + " geändert.",
+                    "color": 16711680
+                }
+            ],
+                "username": "Waffenscheinregister",
+                "avatar_url": "https://i.imgur.com/f7yTuA5.jpeg"
+            })
 
 def get_name_type(value):
     switcher = {
