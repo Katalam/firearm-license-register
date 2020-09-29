@@ -138,7 +138,7 @@ def page_new_char():
     return render_template("base.html")
 
 def message_discord(user, type, name, old_value, new_value):
-    requests.post("https://discordapp.com/api/webhooks/759539167632818186/KZ4SEmLgs-nt8jaCPSy8uj-V2-ZpQSpDHpPw9L9UJ5XM8JfWE7-Fy26CGBjbL9um9MUC", json={
+    requests.post(os.getenv("DISCORD_WEBHOOK"), json={
         "embeds": [
             {
             "title": "Änderung",
