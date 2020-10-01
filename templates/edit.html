@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+{% block left %}
+{% if isShop == 1 %}
+<a href="{{url_for('page_new_char')}}" class="item">
+  <i class="fas fa-plus"></i>&nbsp; Neu
+</a>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div id="example_wrapper" class="dataTables_wrapper dt-semanticUI no-footer">
   <!--

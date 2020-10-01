@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block left %}
+<a href="{{url_for('page_edit')}}" class="item">
+  <i class="fas fa-newspaper"></i>&nbsp; Übersicht
+</a>
+{% endblock %}
+{% block content %}
+<div>
+  <form action="{{url_for('page_new_char_save')}}" method="post" class="ui form">
+    <div class="field">
+      <label>Vorname</label>
+      <input class="ui" type="text" id="name" name="name">
+    </div>
+    <div class="field">
+      <label>Nachname</label>
+      <input class="ui" type="text" id="surname" name="surname">
+    </div>
+    <div class="field">
+      <label>Geburtsdatum</label>
+      <input class="ui" type="date" id="birthday" name="birthday" placeholder="yyyy-mm-dd">
+    </div>
+    <div class="field">
+      <label>Personalausweisnummer</label>
+      <input class="ui" type="text" id="id" name="id">
+    </div>
+    <div class="field">
+      <button class="ui primary button" type="submit">Speichern</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

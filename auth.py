@@ -52,9 +52,12 @@ def page_edit():
     if not session:
         return redirect(url_for("page_login"))
     c.execute("SELECT * FROM characters;")
+    data = c.fetchall()
+    c.execute("SELECT store FROM users WHERE id = %(userId)s;", { "userId": session[2] })
+    user = c.fetchone()
 
     return render_template("edit.html",
-                            rows = c.fetchall())
+                            rows = data, isShop = user[0])
 
 @app.route("/logout", methods = ["GET", "POST"])
 def page_logout():
@@ -132,10 +135,25 @@ def page_edit_char_save(charId):
         c.execute("UPDATE `characters` SET `id_card`= %(idcard)s WHERE id = %(id)s;", { "idcard": idcard, "id": charId })
     return redirect(url_for("page_edit_char", charId = charId))
 
-@app.route("/character/new", methods = ["GET", "POST"])
+@app.route("/new", methods = ["GET", "POST"])
 def page_new_char():
-    message_discord(1, "A", "Markus Ritter", "Ja", "Sperre")
-    return render_template("base.html")
+    return render_template("new.html")
+
+@app.route("/new/save", methods = ["GET", "POST"])
+def page_new_char_save():
+    session = get_session(request)
+    if session is None:
+        return redirect(url_for("page_login"))
+    name = request.form.get("name")
+    surname = request.form.get("surname")
+    birthday = request.form.get("birthday")
+    cardId = request.form.get("id")
+    if name != "" and surname != "" and birthday != "":
+        sql = "INSERT INTO characters (first_name, last_name, birthday, id_card, a, b) VALUES ('{}', '{}', '{}', '{}', 0, 0)".format(name, surname, birthday, cardId)
+        c.execute(sql)
+        charId = c.lastrowid
+        return redirect(url_for("page_edit_char", charId = charId))
+    return redirect(url_for("page_new_char"))
 
 def message_discord(user, type, name, old_value, new_value):
     if os.getenv("DISCORD_WEBHOOK") is not None:
