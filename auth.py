@@ -141,18 +141,20 @@ def page_new_char():
 
 @app.route("/new/save", methods = ["GET", "POST"])
 def page_new_char_save():
-    session = get_session(request)
-    if session is None:
-        return redirect(url_for("page_login"))
-    name = request.form.get("name")
-    surname = request.form.get("surname")
-    birthday = request.form.get("birthday")
-    cardId = request.form.get("id")
-    if name != "" and surname != "" and birthday != "":
-        sql = "INSERT INTO characters (first_name, last_name, birthday, id_card, a, b) VALUES ('{}', '{}', '{}', '{}', 0, 0)".format(name, surname, birthday, cardId)
-        c.execute(sql)
-        charId = c.lastrowid
-        return redirect(url_for("page_edit_char", charId = charId))
+    if request.method == "POST":
+        session = get_session(request)
+        if session is None:
+            return redirect(url_for("page_login"))
+        name = request.form.get("name")
+        surname = request.form.get("surname")
+        birthday = request.form.get("birthday")
+        cardId = request.form.get("id")
+        if name != "" and surname != "" and birthday != "":
+            sql = "INSERT INTO characters (first_name, last_name, birthday, id_card, a, b) VALUES ('{}', '{}', '{}', '{}', 0, 0);".format(name, surname, birthday, cardId)
+            c.execute(sql)
+            charId = c.lastrowid
+            return redirect(url_for("page_edit_char", charId = charId))
+        return redirect(url_for("page_new_char"))
     return redirect(url_for("page_new_char"))
 
 def message_discord(user, type, name, old_value, new_value):
