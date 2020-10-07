@@ -149,7 +149,7 @@ def page_new_char_save():
     birthday = request.form.get("birthday")
     cardId = request.form.get("id")
     if name != "" and surname != "" and birthday != "":
-        sql = "INSERT INTO characters (first_name, last_name, birthday, id_card, a, b) VALUES ('{}', '{}', '{}', '{}', 0, 0)".format(name, surname, birthday, cardId)
+        sql = "INSERT INTO characters (first_name, last_name, birthday, id_card, a, b) VALUES ('{}', '{}', '{}', '{}', 0, 0);".format(name, surname, birthday, cardId)
         c.execute(sql)
         charId = c.lastrowid
         return redirect(url_for("page_edit_char", charId = charId))
