@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div>
-  <form action="{{ url_for('edit_char', cid = id) }}" method="post" class="ui form">
+  <form id="form" action="{{ url_for('edit_char', cid = id) }}" method="post" class="ui form">
     <div class="field">
       <label>Geburtsdatum</label>
       <input class="ui" type="date" id="birthday" name="birthday" value="{{ Birthday }}" placeholder="yyyy-mm-dd">
@@ -61,4 +61,10 @@
     </div>
   </form>
 </div>
+<script>
+  $('#form').submit(function() {
+    $('#a').removeAttr('disabled')
+    $('#b').removeAttr('disabled')
+  })
+</script>
 {% endblock %}
