@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block left %}
-<a href="{{url_for('page_edit')}}" class="item">
+<a href="{{url_for('edit')}}" class="item">
   <i class="fas fa-newspaper"></i>&nbsp; Übersicht
 </a>
 {% endblock %}
 {% block content %}
 <div>
-  <form action="{{url_for('page_new_char_save')}}" method="post" class="ui form">
+  <form action="{{url_for('new')}}" method="post" class="ui form">
     <div class="field">
       <label>Vorname</label>
       <input class="ui" type="text" id="name" name="name">

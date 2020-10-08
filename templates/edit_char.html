@@ -1,12 +1,7 @@
 {% extends 'base.html' %}
-{% block left %}
-<a href="{{url_for('page_edit')}}" class="item">
-  <i class="fas fa-newspaper"></i>&nbsp; Übersicht
-</a>
-{% endblock %}
 {% block content %}
 <div>
-  <form action="{{url_for('page_edit_char_save', charId = id)}}" method="post" class="ui form">
+  <form action="{{ url_for('edit_char', cid = id) }}" method="post" class="ui form">
     <div class="field">
       <label>Geburtsdatum</label>
       <input class="ui" type="date" id="birthday" name="birthday" value="{{ Birthday }}" placeholder="yyyy-mm-dd">
@@ -17,21 +12,27 @@
     </div>
     <div class="field">
       <label>Waffenschein A</label>
-      <select name="a" id="a">
-        <option value="4">Aktiv</option>
-        <option value="3">Beantragt</option>
-        <option value="2">Sperre</option>
-        <option value="1">Entzogen</option>
-        <option value="0">Nicht erworben</option>
+      <select name="a" id="a"
+      {% if not disable_a %}
+      disabled
+      {% endif %}>
+        <option value="4" {% if a == 4 %}selected{% endif %}>Aktiv</option>
+        <option value="3" {% if a == 3 %}selected{% endif %}>Beantragt</option>
+        <option value="2" {% if a == 2 %}selected{% endif %}>Sperre</option>
+        <option value="1" {% if a == 1 %}selected{% endif %}>Entzogen</option>
+        <option value="0" {% if a == 0 %}selected{% endif %}>Nicht erworben</option>
       </select>
     </div>
     <div class="field">
       <label>Waffenschein B</label>
-      <select name="b" id="b">
-        <option value="4">Aktiv</option>
-        <option value="2">Sperre</option>
-        <option value="1">Entzogen</option>
-        <option value="0">Nicht erworben</option>
+      <select name="b" id="b"
+      {% if not disable_b %}
+      disabled
+      {% endif %}>
+        <option value="4" {% if b == 4 %}selected{% endif %}>Aktiv</option>
+        <option value="2" {% if b == 2 %}selected{% endif %}>Sperre</option>
+        <option value="1" {% if b == 1 %}selected{% endif %}>Entzogen</option>
+        <option value="0" {% if b == 0 %}selected{% endif %}>Nicht erworben</option>
       </select>
     </div>
     <div class="field">
@@ -60,10 +61,4 @@
     </div>
   </form>
 </div>
-    <script type=text/javascript>
-      $('#a').val('{{ a }}')
-      $('#b').val('{{ b }}')
-      if ('{{ disable_a }}' == 0) $('#a').prop('disabled', 'disabled')
-      if ('{{ disable_b }}' == 0) $('#b').prop('disabled', 'disabled')
-    </script>
 {% endblock %}

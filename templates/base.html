@@ -4,11 +4,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="https://file.citylossantos.com/star.png">
+    <link rel="icon" href="{{ url_for('static', filename='img/star.png') }}">
     <meta property="og:title" content="Waffenscheinregister" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="http://citylossantos.com" />
-    <meta property="og:image" content="https://file.citylossantos.com/star.png" />
+    <meta property="og:image" content="{{ url_for('static', filename='img/star.png') }}" />
     <meta property="og:description" content="Waffenscheinregister" />
     <meta name="theme-color" content="#90292C">
     <title>AMMU★NATION</title>
@@ -28,15 +28,20 @@
         <div class="ui inverted stackable main menu">
             <div class="ui container">
                 {% block left %}
+                {% if sid %}
+                <a href="{{ url_for('edit') }}" class="item">
+                    <i class="fas fa-newspaper"></i>&nbsp; Übersicht
+                </a>
+                {% endif %}
                 {% endblock %}
                 <div class="right menu">
-                    {% if login %}
-                    <a href="{{url_for('page_login')}}" class="item"><i class="fas fa-sign-in-alt"></i>
-                        &nbsp; Login
+                    {% if sid %}
+                    <a href="{{ url_for('logout') }}" class="item"><i class="fas fa-sign-in-alt"></i>
+                        &nbsp; Logout
                     </a>
                     {% else %}
-                    <a href="{{url_for('page_logout')}}" class="item"><i class="fas fa-sign-in-alt"></i>
-                        &nbsp; Logout
+                    <a href="{{ url_for('login') }}" class="item"><i class="fas fa-sign-in-alt"></i>
+                        &nbsp; Login
                     </a>
                     {% endif %}
                 </div>
