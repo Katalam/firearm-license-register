@@ -4,4 +4,4 @@ __pycache__/
 relative_files/
 venv/
 wsgi.py
-.vscode/settings.json
+.vscode/
