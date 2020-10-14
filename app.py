@@ -218,6 +218,10 @@ def not_found(error):
     return render_template('base.html',
                 h='404', m='Site not found.', sid='sid' in session), 404
 
+@app.errorhandler(Exception)
+def error(e):
+    return e
+
 @app.before_request
 def remove_expired_sessions():
     sql = 'DELETE FROM sessions \
