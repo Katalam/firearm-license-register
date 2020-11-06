@@ -9,14 +9,16 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 app.session_cookie_name = os.getenv('SESSION_NAME')
 
-db = mysql.connector.connect(
-    host = os.getenv('DB_HOST'),
-    user = os.getenv('DB_USER'),
-    password = os.getenv('DB_PASSWORD'),
-    database = os.getenv('DB_DATABASE')
-)
+def get_db():
+    db = mysql.connector.connect(
+        host = os.getenv('DB_HOST'),
+        user = os.getenv('DB_USER'),
+        password = os.getenv('DB_PASSWORD'),
+        database = os.getenv('DB_DATABASE')
+    )
+    return db
 
-c = db.cursor()
+# c = db.cursor()
 
 @app.route('/')
 def index():
@@ -44,8 +46,11 @@ def login():
 def edit():
     if 'sid' not in session:
         return redirect('login')
+    db = get_db()
+    c = db.cursor()
     c.execute('SELECT * FROM characters;')
     data = c.fetchall()
+    db.close()
     return render_template('edit.html',
         rows=data, new=True, sid=True)
 
@@ -57,6 +62,8 @@ def logout():
 
 @app.route('/character/<cid>', methods=['GET', 'POST'])
 def edit_char(cid):
+    db = get_db()
+    c = db.cursor()
     if 'sid' not in session:
         return redirect('login')
     if request.method == 'GET':
@@ -66,6 +73,7 @@ def edit_char(cid):
                    FROM characters WHERE id=%(c)s;', { 'c': cid })
         data = c.fetchone()
         if data is None:
+            db.close()
             return redirect(url_for('edit'))
         f_name, l_name, a, b, comment, l_edited, l_e_from, birthday, id_c = data
         l_e_name = None
@@ -75,6 +83,7 @@ def edit_char(cid):
                 r = c.fetchone()
                 if r is not None:
                     l_e_name = r[0]
+        db.close()
         return render_template("edit_char.html",
                             a=a, b=b, id=cid, h=f_name + ' ' + l_name,
                             disable_a=allowed_to_change(a, session['user_id']),
@@ -116,10 +125,13 @@ def edit_char(cid):
         c.execute('UPDATE characters SET id_card=%(idcard)s \
                    WHERE id=%(id)s;', { "idcard": idcard, "id": cid })
     db.commit()
+    db.close()
     return redirect(url_for('edit_char', cid=cid))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    db = get_db()
+    c = db.cursor()
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -129,6 +141,7 @@ def register():
                    WHERE code=%(c)s', { 'c': code })
         data = c.fetchone()
         if data is None:
+            db.close()
             return render_template('base.html', sid='sid' in session,
                                     h='Falscher EInladungscode',
                                     m='Einladungscode falsch.')
@@ -148,11 +161,15 @@ def register():
                        's': salt,
                        'h': user_hash })
         db.commit()
+        db.close()
         return redirect(url_for('login'))
+    db.close()
     return render_template('register.html')
 
 @app.route('/new', methods=['GET', 'POST'])
 def new():
+    db = get_db()
+    c = db.cursor()
     if 'sid' not in session:
         return redirect('login')
     if request.method == 'POST':
@@ -166,8 +183,11 @@ def new():
                        VALUES (%(n)s, %(s)s, %(b)s, %(c)s);',
                        { 'n': name, 's': surname, 'b': birthday, 'c': cardId })
             cid = c.lastrowid
+            db.close()
             return redirect(url_for('edit_char', cid=cid))
+        db.close()
         return redirect('new')
+    db.close()
     return render_template("new.html")
 
 def message_discord(user, type, name, old_value, new_value):
@@ -199,8 +219,11 @@ Return allowed to changed a or b value based on userId
 if returned value is 0 you are not allowed to change it
 '''
 def allowed_to_change(value, userId):
+    db = get_db()
+    c = db.cursor()
     c.execute('SELECT police, store FROM users WHERE id = %(userId)s;', { 'userId': userId })
     data = c.fetchone()
+    db.close()
     police, store = data
     if data is None:
         return False
@@ -224,6 +247,8 @@ def error(e):
 
 @app.before_request
 def remove_expired_sessions():
+    db = get_db()
+    c = db.cursor()
     sql = 'DELETE FROM sessions \
            WHERE expires_after < NOW();'
     c.execute(sql)
@@ -239,15 +264,19 @@ def remove_expired_sessions():
             return
         session['sid'] = data[0]
         session['user_id'] = data[1]
+    db.close()
 
 @app.after_request
 def update_sessions(response):
+    db = get_db()
+    c = db.cursor()
     if 'sid' in session:
         sql = "UPDATE sessions \
                SET expires_after = DATE_ADD(NOW(), INTERVAL 1 HOUR) \
                WHERE session_id='{}';".format(session['sid'])
         c.execute(sql)
         db.commit()
+    db.close()
     return response
 
 '''
@@ -255,8 +284,11 @@ Return authenticated session if username in database
 and given plain passwords hash is equal database saved one.
 '''
 def user_login(username, password):
+    db = get_db()
+    c = db.cursor()
     c.execute('SELECT id FROM users WHERE username=%(u)s;', { 'u': username })
     user_id = c.fetchone()
+    db.close()
     if user_id is None:
         return None
     if auth(user_id[0], password):
@@ -267,9 +299,12 @@ def user_login(username, password):
 Compares given plain password with saved hash and return the result.
 '''
 def auth(user_id, password):
+    db = get_db()
+    c = db.cursor()
     c.execute('SELECT salt, hash \
                FROM users WHERE id=%(u)s;', { 'u': user_id })
     r = c.fetchone()
+    db.close()
     if r is None:
         return False
     salt = r[0]
@@ -285,11 +320,14 @@ def auth(user_id, password):
 Creates authenticated session.
 '''
 def create_authenticated_session(user_id):
+    db = get_db()
+    c = db.cursor()
     sid = secrets.token_hex(32)
     sql = "INSERT INTO sessions (session_id, expires_after, user_id) \
            VALUES ('{}', DATE_ADD(NOW(), INTERVAL 1 HOUR), '{}');".format(sid, user_id)
     c.execute(sql)
     db.commit()
+    db.close()
     return sid, user_id
 
 if __name__ == "__main__":
